@@ -67,12 +67,12 @@ jobs:
           git commit -am "Update image tag"
           git push -u origin main
 
-      - name: action-slack
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }} #job의 성공 여부 
-          author_name: Sloth Backend - dev #알림 메시지의 제목으로 사용될 이름
-          fields: repo,commit,message,author #메시지에 보일 정보
-          mention: here #멘션할 대상 지정 
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      # - name: action-slack
+      #   uses: 8398a7/action-slack@v3
+      #   with:
+      #     status: ${{ job.status }} #job의 성공 여부 
+      #     author_name: Sloth Backend - dev #알림 메시지의 제목으로 사용될 이름
+      #     fields: repo,commit,message,author #메시지에 보일 정보
+      #     mention: here #멘션할 대상 지정 
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
