@@ -1,32 +1,25 @@
-name: Notify Slack on Success
-if: success() # 이 step은 job이 성공한 경우에만 실행된다.
-id: slack-success
-uses: slackapi/slack-github-action@v1.24.0
-with:
-  payload: |
-    {
-      "channel": "gitaction-notification",
-      "attachments": [
-        {
-          "color": "#36a64f", # 성공시 연두색
-          "title": "ecommerce-workshop-src-Jo", # 제목은 깃헙 레포지토리
-          "title_link": "https://github.com/ecommerce-workshop-src-Jo", # 제목 클릭시 레포지토리로 이동
-          "text": "GitHub Action 성공 :white_check_mark:",
-          "fields": [
-            {
-              "title": "Repository",
-              "value": "ecommerce-workshop-src-Jo",
-              "short": true
-            },
-            {
-              "title": "Tag",
-              "value": "main",
-              "short": true
-            }
-          ]      
-        }
-      ]
-    }
+name: Slack Notification
+ 
+on:
+  pull_request:
+    branches: [ "main" ]
+ 
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: action-slack
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        author_name: www-be
+        fields: repo,message,commit,author,action,eventName,ref,workflow,job,took
+        if_mention: failure,cancelled
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+      if: always() # Pick up events even if the job fails or is canceled.
+ 
+
 env:
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # 위에서 설정한 WEBHOOK URL
   SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
