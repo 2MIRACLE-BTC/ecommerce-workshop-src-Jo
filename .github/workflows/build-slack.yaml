@@ -1,13 +1,13 @@
-name: Notify Slack on Success
+name: Notify Slack on Status
 
-on: [push, pull_request] # 이 예제에서는 push와 pull_request 이벤트에 대해 작업을 트리거합니다.
+on: [push, pull_request]
 
 jobs:
-  notify_slack:
+  notify_slack_on_success:
     runs-on: ubuntu-latest
+    if: success()
     steps:
       - name: Notify Slack on Success
-        if: success() # 이 step은 job이 성공한 경우에만 실행됩니다.
         uses: slackapi/slack-github-action@v1.24.0
         with:
           payload: |
@@ -37,3 +37,39 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+  notify_slack_on_failure:
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+      - name: Notify Slack on Failure
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "channel": "gitaction-notification",
+              "attachments": [
+                {
+                  "color": "#ff0000",
+                  "title": "${{ github.repository }}",
+                  "title_link": "https://github.com/${{ github.repository }}",
+                  "text": "GitHub Action 실패",
+                  "fields": [
+                    {
+                      "title": "Repository",
+                      "value": "${{ github.repository }}",
+                      "short": true
+                    },
+                    {
+                      "title": "Branch",
+                      "value": "${{ github.ref_name }}",
+                      "short": true
+                    }
+                  ]      
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
