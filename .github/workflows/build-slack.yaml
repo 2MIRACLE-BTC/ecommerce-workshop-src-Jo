@@ -1,32 +1,39 @@
 name: Notify Slack on Success
-  if: success() # 이 step은 job이 성공한 경우에만 실행된다.
-  id: slack-success
-  uses: slackapi/slack-github-action@v1.24.0
-  with:
-    payload: |
-      {
-        "channel": "gitaction-notification",
-        "attachments": [
-          {
-            "color": "#36a64f", # 성공시 연두색
-            "title": "${{ github.repository }}", # 제목은 깃헙 레포지토리
-            "title_link": "https://github.com/${{github.repository}}", # 제목 클릭시 레포지토리로 이동
-            "text": "GitHub Action 성공",
-            "fields": [
-              {
-                "title": "Repository",
-                "value": "${{ github.repository }}",
-                "short": true
-              },
-              {
-                "title": "Tag",
-                "value": "${{ github.ref_name }}",
-                "short": true
-              }
-            ]      
-          }
-        ]
-      }
-  env:
-    SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-    SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
+on: [push, pull_request] # 이 예제에서는 push와 pull_request 이벤트에 대해 작업을 트리거합니다.
+
+jobs:
+  notify_slack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Slack on Success
+        if: success() # 이 step은 job이 성공한 경우에만 실행됩니다.
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "channel": "gitaction-notification",
+              "attachments": [
+                {
+                  "color": "#36a64f", // 성공시 연두색
+                  "title": "${{ github.repository }}", // 제목은 깃헙 레포지토리
+                  "title_link": "https://github.com/${{ github.repository }}", // 제목 클릭시 레포지토리로 이동
+                  "text": "GitHub Action 성공",
+                  "fields": [
+                    {
+                      "title": "Repository",
+                      "value": "${{ github.repository }}",
+                      "short": true
+                    },
+                    {
+                      "title": "Branch",
+                      "value": "${{ github.ref_name }}",
+                      "short": true
+                    }
+                  ]      
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
